@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { LaserFlowHero } from "@/components/ui/LaserFlowHero";
+import InfiniteHero from "@/components/infinite-hero";
+import { createAdminClient } from "@/lib/supabase-server";
 
 const differentiators = [
   {
@@ -42,147 +43,157 @@ const included = [
   "Your API key is never stored — ever",
 ];
 
-export default function Home() {
+export default async function Home() {
+  const supabase = createAdminClient();
+  const { count } = await supabase
+    .from("waitlist_signups")
+    .select("*", { count: "exact", head: true });
+
+  const waitlistCount = count ?? 0;
+
   return (
-    <main className="flex flex-col items-center overflow-x-hidden">
+    <main className="flex flex-col items-center overflow-x-hidden bg-black text-white">
 
       {/* ── Hero ── */}
-      <section className="relative w-full min-h-screen overflow-hidden flex items-center">
-        <LaserFlowHero />
+      <InfiniteHero waitlistCount={waitlistCount} />
 
-        {/* Text pushed to upper portion — leaves beam-glow space at the bottom */}
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-16 pt-20 md:pt-28 pb-[28vh]">
-          <div className="max-w-xl">
-            <span className="inline-block px-3 py-1 rounded-full border border-[var(--border)] text-[var(--muted-foreground)] text-sm mb-6 md:mb-8">
-              Built for developers who want control
-            </span>
+      {/* ── Differentiators ── */}
+      <section className="w-full border-t border-white/5">
+        <div className="max-w-5xl mx-auto px-6 sm:px-8 py-24 md:py-32">
+          <p className="text-xs uppercase tracking-widest text-blue-400 mb-4">
+            Why XVault
+          </p>
+          <h2 className="text-3xl sm:text-4xl font-light tracking-tight mb-4">
+            How it&apos;s different
+          </h2>
+          <p className="text-white/50 mb-14 max-w-lg text-base leading-relaxed">
+            Most X growth tools charge you for API calls with a hidden markup
+            baked in. XVault flips that model entirely.
+          </p>
 
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-5 md:mb-6 leading-[1.05]">
-              X<span className="text-[var(--primary)]">Vault</span>
-            </h1>
-
-            <p className="text-lg sm:text-xl text-[var(--muted-foreground)] mb-4 leading-relaxed">
-              The X growth platform with a{" "}
-              <span className="text-[var(--foreground)] font-semibold">BYOK model</span>.
-              Bring your own API key, pay a flat platform fee, and keep full
-              control over your costs.
-            </p>
-
-            <p className="text-[var(--muted-foreground)] mb-8 md:mb-10 max-w-md text-sm sm:text-base">
-              No key storage. No API markup. Just powerful AI tooling on top of
-              your own credentials.
-            </p>
-
-            <Link
-              href="/waitlist"
-              className="inline-block px-6 sm:px-8 py-3 sm:py-4 bg-[var(--primary)] text-white rounded-lg font-semibold hover:opacity-90 transition-opacity text-sm sm:text-base"
-            >
-              Join the Waitlist
-            </Link>
+          <div className="grid sm:grid-cols-3 gap-px bg-white/5 rounded-2xl overflow-hidden">
+            {differentiators.map((d) => (
+              <div
+                key={d.title}
+                className="bg-[#0a0a0a] p-7 sm:p-8 flex flex-col gap-4"
+              >
+                <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                <h3 className="font-medium text-base">{d.title}</h3>
+                <p className="text-white/50 text-sm leading-relaxed">{d.body}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* ── Differentiators ── pulled up so beam tip meets the top of the cards ── */}
-      <section className="relative z-10 w-full max-w-5xl px-6 sm:px-8 -mt-[120px] sm:-mt-[160px] md:-mt-[200px] pb-20 md:pb-28">
-        <h2 className="text-2xl sm:text-3xl font-bold mb-3">
-          How it&apos;s different
-        </h2>
-        <p className="text-[var(--muted-foreground)] mb-10 max-w-lg text-sm sm:text-base">
-          Most X growth tools charge you for API calls with a hidden markup
-          baked in. XVault flips that model entirely.
-        </p>
-
-        <div
-          className="grid gap-4"
-          style={{ gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}
-        >
-          {differentiators.map((d) => (
-            <div
-              key={d.title}
-              className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 sm:p-6"
-            >
-              <div className="w-2 h-2 rounded-sm bg-[var(--primary)] mb-4 sm:mb-5" />
-              <h3 className="font-semibold text-sm sm:text-base mb-2">{d.title}</h3>
-              <p className="text-[var(--muted-foreground)] text-xs sm:text-sm leading-relaxed">
-                {d.body}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* ── How it works ── */}
-      <section className="w-full max-w-2xl px-6 sm:px-8 pb-20 md:pb-28">
-        <h2 className="text-2xl sm:text-3xl font-bold mb-3">How it works</h2>
-        <p className="text-[var(--muted-foreground)] mb-10 text-sm sm:text-base">
-          Simple setup. Total transparency.
-        </p>
+      <section id="features" className="w-full border-t border-white/5">
+        <div className="max-w-2xl mx-auto px-6 sm:px-8 py-24 md:py-32">
+          <p className="text-xs uppercase tracking-widest text-blue-400 mb-4">
+            Setup
+          </p>
+          <h2 className="text-3xl sm:text-4xl font-light tracking-tight mb-4">
+            How it works
+          </h2>
+          <p className="text-white/50 mb-14 text-base leading-relaxed">
+            Simple setup. Total transparency.
+          </p>
 
-        <div className="flex flex-col gap-8 md:gap-10">
-          {steps.map((s) => (
-            <div key={s.n} className="flex gap-5 md:gap-6">
-              <span className="font-mono text-[var(--primary)] font-bold text-base md:text-lg shrink-0 w-8 pt-0.5">
-                {s.n}
-              </span>
-              <div>
-                <h3 className="font-semibold text-sm sm:text-base mb-1">{s.title}</h3>
-                <p className="text-[var(--muted-foreground)] text-xs sm:text-sm leading-relaxed">
-                  {s.body}
-                </p>
+          <div className="flex flex-col gap-10">
+            {steps.map((s) => (
+              <div key={s.n} className="flex gap-6">
+                <span className="font-mono text-blue-400 text-sm font-medium shrink-0 w-8 pt-0.5">
+                  {s.n}
+                </span>
+                <div>
+                  <h3 className="font-medium text-base mb-2">{s.title}</h3>
+                  <p className="text-white/50 text-sm leading-relaxed">{s.body}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 
       {/* ── Pricing ── */}
-      <section className="w-full max-w-2xl px-6 sm:px-8 pb-20 md:pb-28">
-        <h2 className="text-2xl sm:text-3xl font-bold mb-3">Transparent pricing</h2>
-        <p className="text-[var(--muted-foreground)] mb-10 max-w-md text-sm sm:text-base">
-          One flat platform fee. Your X API costs stay between you and X —
-          we never touch them.
-        </p>
-
-        <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-6 sm:p-8 max-w-sm">
-          <p className="text-xs uppercase tracking-widest text-[var(--muted-foreground)] mb-3">
-            Platform fee
+      <section className="w-full border-t border-white/5">
+        <div className="max-w-2xl mx-auto px-6 sm:px-8 py-24 md:py-32">
+          <p className="text-xs uppercase tracking-widest text-blue-400 mb-4">
+            Pricing
           </p>
-          <p className="text-4xl font-bold mb-1">
-            $19
-            <span className="text-xl font-normal text-[var(--muted-foreground)]">
-              /mo
-            </span>
-          </p>
-          <p className="text-sm text-[var(--muted-foreground)] mb-7 sm:mb-8">
-            + your own X API costs (paid directly to X)
+          <h2 className="text-3xl sm:text-4xl font-light tracking-tight mb-4">
+            Transparent pricing
+          </h2>
+          <p className="text-white/50 mb-14 max-w-md text-base leading-relaxed">
+            One flat platform fee. Your X API costs stay between you and X —
+            we never touch them.
           </p>
 
-          <ul className="flex flex-col gap-3">
-            {included.map((item) => (
-              <li key={item} className="flex items-start gap-3 text-xs sm:text-sm">
-                <span className="text-[var(--primary)] shrink-0 mt-0.5">✓</span>
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
+          <div className="border border-white/10 rounded-2xl p-8 max-w-sm bg-white/[0.03]">
+            <p className="text-xs uppercase tracking-widest text-white/40 mb-5">
+              Platform fee
+            </p>
+            <p className="text-5xl font-light tracking-tight mb-1">
+              $19
+              <span className="text-2xl text-white/40 ml-1">/mo</span>
+            </p>
+            <p className="text-sm text-white/40 mb-8">
+              + your own X API costs (paid directly to X)
+            </p>
+
+            <ul className="flex flex-col gap-3.5">
+              {included.map((item) => (
+                <li key={item} className="flex items-start gap-3 text-sm">
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 14 14"
+                    fill="none"
+                    className="shrink-0 mt-0.5 text-blue-400"
+                    aria-hidden
+                  >
+                    <path
+                      d="M2 7L5.5 10.5L12 3.5"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                  <span className="text-white/70">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </section>
 
       {/* ── Bottom CTA ── */}
-      <section className="w-full max-w-2xl px-6 sm:px-8 pb-24 md:pb-32">
-        <h2 className="text-2xl sm:text-3xl font-bold mb-3">
-          Your API key. Your costs. Your control.
-        </h2>
-        <p className="text-[var(--muted-foreground)] mb-7 sm:mb-8 text-sm sm:text-base">
-          Early access is limited. Get on the list now.
-        </p>
-        <Link
-          href="/waitlist"
-          className="inline-block px-6 sm:px-8 py-3 sm:py-4 bg-[var(--primary)] text-white rounded-lg font-semibold hover:opacity-90 transition-opacity text-sm sm:text-base"
-        >
-          Join the Waitlist
-        </Link>
+      <section className="w-full border-t border-white/5">
+        <div className="max-w-2xl mx-auto px-6 sm:px-8 py-24 md:py-32">
+          <h2 className="text-3xl sm:text-4xl font-light tracking-tight mb-4">
+            Your API key. Your costs.
+            <br />
+            Your control.
+          </h2>
+          <p className="text-white/50 mb-8 text-base leading-relaxed">
+            Early access is limited. Get on the list now.
+          </p>
+          <Link
+            href="/waitlist"
+            className="inline-flex items-center gap-2 border border-white/30 bg-white/10 px-6 py-3 text-sm rounded-lg font-medium tracking-wide text-white backdrop-blur-sm transition-[border-color,background-color] duration-300 hover:border-white/50 hover:bg-white/15"
+          >
+            Join the Waitlist
+          </Link>
+          {waitlistCount > 0 && (
+            <p className="mt-4 text-sm text-white/35">
+              <span className="text-white/55">
+                {waitlistCount.toLocaleString()} developers
+              </span>{" "}
+              already on the list
+            </p>
+          )}
+        </div>
       </section>
 
     </main>

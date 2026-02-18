@@ -4,7 +4,9 @@
       "Bash(test:*)",
       "Bash(cmd /c:*)",
       "Bash(node -e:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "WebFetch(domain:www.figma.com)",
+      "WebSearch"
     ]
   }
 }
